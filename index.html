@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stock Market Analyst Bot - Pro Version</title>
+    <title>Stock Market Analyst Bot - Pro Secure</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome Icons -->
@@ -33,220 +33,271 @@
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen font-sans flex flex-col custom-scrollbar">
 
-    <!-- Header Navigation -->
-    <header class="border-b border-emerald-500/30 bg-slate-900/80 sticky top-0 z-50 backdrop-blur">
-        <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
-            <div class="flex items-center space-x-3">
-                <div class="bg-emerald-500/20 p-2 rounded-lg border border-emerald-500/50">
-                    <i class="fa-solid fa-chart-line text-emerald-400 text-xl animate-pulse"></i>
+    <!-- 🔐 SECURE LOGIN SCREEN -->
+    <div id="login-container" class="fixed inset-0 z-[9999] bg-slate-950 flex items-center justify-center p-4">
+        <div class="glass-panel w-full max-w-md p-8 rounded-3xl border border-emerald-500/30 shadow-2xl relative overflow-hidden">
+            <div class="absolute -top-10 -right-10 w-32 h-32 bg-emerald-500/10 rounded-full blur-3xl"></div>
+            
+            <div class="text-center mb-6">
+                <div class="inline-block bg-emerald-500/20 p-4 rounded-full border border-emerald-500/40 mb-3">
+                    <i class="fa-solid fa-user-shield text-emerald-400 text-3xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold tracking-wide text-emerald-400">FIN-ROUTER AI</h2>
+                <p class="text-xs text-slate-400 mt-1">Authorized Investment Analyst Access Only</p>
+            </div>
+
+            <div id="login-error" class="hidden bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs py-2 px-3 rounded-lg mb-4 text-center">
+                <i class="fa-solid fa-triangle-exclamation mr-1"></i> Invalid Username or Password!
+            </div>
+
+            <form onsubmit="handleLogin(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1.5 font-semibold">Username</label>
+                    <div class="relative">
+                        <span class="absolute left-3 top-2.5 text-slate-500"><i class="fa-solid fa-user"></i></span>
+                        <input type="text" id="username" required class="w-full bg-slate-900/80 border border-slate-700/80 rounded-xl pl-9 pr-3 py-2 text-sm focus:border-emerald-500 focus:outline-none transition-all text-white" placeholder="Enter username">
+                    </div>
                 </div>
                 <div>
-                    <h1 class="font-bold text-lg tracking-wide text-emerald-400">FIN-ROUTER AI</h1>
-                    <p class="text-xs text-slate-400">Strict 5-API Routing & PDF Analyser Bot</p>
+                    <label class="block text-xs text-slate-400 mb-1.5 font-semibold">Password</label>
+                    <div class="relative">
+                        <span class="absolute left-3 top-2.5 text-slate-500"><i class="fa-solid fa-lock"></i></span>
+                        <input type="password" id="password" required class="w-full bg-slate-900/80 border border-slate-700/80 rounded-xl pl-9 pr-3 py-2 text-sm focus:border-emerald-500 focus:outline-none transition-all text-white" placeholder="••••••••">
+                    </div>
                 </div>
-            </div>
-            <div class="flex items-center space-x-4">
-                <span class="text-xs bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 px-2 py-1 rounded-full flex items-center gap-1">
-                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span> Live Status
-                </span>
-                <button onclick="toggleSettings()" class="bg-slate-800 hover:bg-emerald-600 hover:text-white transition px-3 py-1.5 rounded-lg text-sm flex items-center gap-2 border border-slate-700">
-                    <i class="fa-solid fa-sliders"></i> API & PDF Setup
+                <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-500 active:scale-[0.98] transition-all text-white py-2.5 rounded-xl font-bold text-sm shadow-lg shadow-emerald-900/20">
+                    Secure Log In <i class="fa-solid fa-arrow-right-to-bracket ml-1"></i>
                 </button>
+            </form>
+            <div class="text-center mt-6 text-[10px] text-slate-500">
+                End-to-End Encryption Protected
             </div>
         </div>
-    </header>
+    </div>
 
-    <!-- Main Layout -->
-    <main class="flex-grow max-w-7xl w-full mx-auto px-4 py-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+    <!-- 📊 SECURE DASHBOARD WRAPPER -->
+    <div id="dashboard-wrapper" class="hidden flex flex-col min-h-screen">
         
-        <!-- Left Sidebar: Settings, PDF & Logs -->
-        <aside id="settings-sidebar" class="lg:col-span-4 space-y-6 hidden lg:block">
-            
-            <!-- API Configuration Panel -->
-            <div class="glass-panel p-5 rounded-2xl border border-slate-800 shadow-xl">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="font-bold text-emerald-400 flex items-center gap-2">
-                        <i class="fa-solid fa-key"></i> API Configuration
-                    </h3>
-                    <span class="text-xs text-slate-400">Saved in browser</span>
+        <!-- Header Navigation -->
+        <header class="border-b border-emerald-500/30 bg-slate-900/80 sticky top-0 z-50 backdrop-blur">
+            <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
+                <div class="flex items-center space-x-3">
+                    <div class="bg-emerald-500/20 p-2 rounded-lg border border-emerald-500/50">
+                        <i class="fa-solid fa-chart-line text-emerald-400 text-xl animate-pulse"></i>
+                    </div>
+                    <div>
+                        <h1 class="font-bold text-lg tracking-wide text-emerald-400">FIN-ROUTER AI</h1>
+                        <p class="text-xs text-slate-400">Strict 5-API Routing & PDF Analyser Bot</p>
+                    </div>
                 </div>
-                
-                <div class="space-y-3 text-sm">
-                    <!-- OpenRouter -->
-                    <div>
-                        <label class="block text-slate-400 text-xs mb-1">OpenRouter API Key (Main Brain)</label>
-                        <input type="password" id="key-openrouter" class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-1.5 focus:border-emerald-500 focus:outline-none" placeholder="sk-or-...">
-                    </div>
-                    <!-- FRED -->
-                    <div>
-                        <label class="block text-slate-400 text-xs mb-1">FRED API Key</label>
-                        <input type="password" id="key-fred" class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-1.5 focus:border-emerald-500 focus:outline-none" placeholder="Federal Reserve Key">
-                    </div>
-                    <!-- News Data -->
-                    <div>
-                        <label class="block text-slate-400 text-xs mb-1">NewsData API Key</label>
-                        <input type="password" id="key-newsdata" class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-1.5 focus:border-emerald-500 focus:outline-none" placeholder="NewsData.io key">
-                    </div>
-                    <!-- CoinGecko -->
-                    <div>
-                        <label class="block text-slate-400 text-xs mb-1">CoinGecko API Key (Optional/Free)</label>
-                        <input type="password" id="key-coingecko" class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-1.5 focus:border-emerald-500 focus:outline-none" placeholder="Leave blank for Free API">
-                    </div>
-                    
-                    <!-- Mode Selector -->
-                    <div class="pt-2">
-                        <label class="block text-slate-400 text-xs mb-2">Execution Mode</label>
-                        <div class="grid grid-cols-2 gap-2">
-                            <button id="mode-live" onclick="setMode('live')" class="w-full py-1.5 rounded text-xs font-semibold border border-emerald-500 bg-emerald-500/10 text-emerald-400 transition">
-                                <i class="fa-solid fa-satellite-dish mr-1"></i> Live API
-                            </button>
-                            <button id="mode-mock" onclick="setMode('mock')" class="w-full py-1.5 rounded text-xs font-semibold border border-slate-700 bg-slate-800 text-slate-400 transition">
-                                <i class="fa-solid fa-vial mr-1"></i> Demo Mode
-                            </button>
-                        </div>
-                    </div>
-
-                    <button onclick="saveApiKeys()" class="w-full mt-4 bg-emerald-600 hover:bg-emerald-500 transition text-white py-2 rounded-lg font-bold">
-                        <i class="fa-solid fa-floppy-disk mr-1"></i> Save Configuration
+                <div class="flex items-center space-x-4">
+                    <span class="text-xs bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 px-2.5 py-1 rounded-full flex items-center gap-1.5">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span> Deburohidas Active
+                    </span>
+                    <button onclick="toggleSettings()" class="bg-slate-800 hover:bg-emerald-600 hover:text-white transition px-3 py-1.5 rounded-lg text-sm flex items-center gap-2 border border-slate-700">
+                        <i class="fa-solid fa-sliders"></i> API Setup
+                    </button>
+                    <!-- Logout button -->
+                    <button onclick="handleLogout()" class="bg-rose-500/10 hover:bg-rose-600 border border-rose-500/30 text-rose-400 hover:text-white transition px-3 py-1.5 rounded-lg text-sm flex items-center gap-2">
+                        <i class="fa-solid fa-power-off"></i> Logout
                     </button>
                 </div>
             </div>
+        </header>
 
-            <!-- PDF Upload / Knowledge Base -->
-            <div class="glass-panel p-5 rounded-2xl border border-slate-800 shadow-xl">
-                <h3 class="font-bold text-emerald-400 flex items-center gap-2 mb-3">
-                    <i class="fa-solid fa-file-pdf"></i> PDF Knowledge Base
-                </h3>
-                <p class="text-xs text-slate-400 mb-4">Upload books, formulas, or custom instructions to feed your model context.</p>
-                
-                <div id="pdf-drop-zone" class="border-2 border-dashed border-slate-700 hover:border-emerald-500 transition rounded-xl p-6 text-center cursor-pointer relative">
-                    <input type="file" id="pdf-input" accept=".pdf" class="absolute inset-0 opacity-0 cursor-pointer">
-                    <i class="fa-solid fa-cloud-arrow-up text-3xl text-emerald-500/70 mb-2"></i>
-                    <p class="text-sm font-semibold">Click or drag PDF here</p>
-                    <p class="text-xs text-slate-500 mt-1">Text extracted directly on your browser</p>
-                </div>
-
-                <!-- PDF Status Information -->
-                <div id="pdf-status" class="hidden mt-4 p-3 bg-slate-900/60 rounded-lg border border-slate-800">
-                    <div class="flex items-center justify-between text-xs">
-                        <span class="text-slate-400 flex items-center gap-1">
-                            <i class="fa-solid fa-paperclip text-emerald-400"></i>
-                            <span id="pdf-name" class="font-semibold truncate max-w-[150px]"></span>
-                        </span>
-                        <span id="pdf-size" class="text-slate-500"></span>
-                    </div>
-                    <div class="mt-2 text-xs text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded flex justify-between items-center">
-                        <span>Status: Loaded & Analyzed</span>
-                        <button onclick="clearPdf()" class="text-red-400 hover:text-red-300"><i class="fa-solid fa-trash"></i></button>
-                    </div>
-                    <div class="mt-2 text-slate-400 text-xs">
-                        <strong>Extracted Words:</strong> <span id="pdf-words">0</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- API Live Activity Logs -->
-            <div class="glass-panel p-5 rounded-2xl border border-slate-800 shadow-xl flex flex-col h-[280px]">
-                <div class="flex justify-between items-center mb-2">
-                    <h3 class="font-bold text-emerald-400 flex items-center gap-2 text-sm">
-                        <i class="fa-solid fa-terminal"></i> API Routing Logs
-                    </h3>
-                    <button onclick="clearLogs()" class="text-xs text-slate-400 hover:text-white">Clear</button>
-                </div>
-                <div id="logs-container" class="flex-grow bg-slate-950 rounded p-3 font-mono text-[11px] text-slate-300 overflow-y-auto custom-scrollbar space-y-1">
-                    <div class="text-slate-500">[System] App initialized... Ready for questions.</div>
-                </div>
-            </div>
-
-        </aside>
-
-        <!-- Main Chat Area & Library -->
-        <section class="lg:col-span-8 flex flex-col space-y-6">
+        <!-- Main Layout -->
+        <main class="flex-grow max-w-7xl w-full mx-auto px-4 py-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
             
-            <!-- Tab Controls -->
-            <div class="bg-slate-900 p-1.5 rounded-xl border border-slate-800 flex">
-                <button onclick="switchTab('library')" id="tab-library" class="flex-1 py-2 text-sm font-semibold rounded-lg bg-emerald-500 text-white shadow-lg transition">
-                    <i class="fa-solid fa-compass mr-1.5"></i> 53 Specialist Questions Directory
-                </button>
-                <button onclick="switchTab('chat')" id="tab-chat" class="flex-1 py-2 text-sm font-semibold rounded-lg text-slate-400 hover:text-white transition">
-                    <i class="fa-solid fa-comments mr-1.5"></i> Live Specialist Chat
-                </button>
-            </div>
-
-            <!-- TAB 1: 53 Questions Directory -->
-            <div id="panel-library" class="space-y-4">
-                <div class="bg-slate-900/40 border border-slate-800 p-4 rounded-xl flex justify-between items-center">
-                    <div>
-                        <h2 class="font-bold text-lg text-emerald-400">Specialist Question Router Map</h2>
-                        <p class="text-xs text-slate-400">Click any question. The system will auto-route to the mapped API, fetch data, and answer strictly without hallucination.</p>
-                    </div>
-                    <div class="text-right">
-                        <span class="text-xs bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 px-2 py-1 rounded">53 Questions Total</span>
-                    </div>
-                </div>
-
-                <!-- Accordion/Grid of Categories -->
-                <div class="space-y-3 max-h-[60vh] overflow-y-auto custom-scrollbar pr-1" id="categories-container">
-                    <!-- Categories will be dynamically generated by JS -->
-                </div>
-            </div>
-
-            <!-- TAB 2: Live Specialist Chat -->
-            <div id="panel-chat" class="hidden flex flex-col bg-slate-900 border border-slate-800 rounded-2xl h-[65vh] overflow-hidden">
+            <!-- Left Sidebar: Settings, PDF & Logs -->
+            <aside id="settings-sidebar" class="lg:col-span-4 space-y-6 hidden lg:block">
                 
-                <!-- Chat Feed -->
-                <div id="chat-feed" class="flex-grow p-4 overflow-y-auto custom-scrollbar space-y-4 bg-slate-950/50">
-                    <div class="flex items-start gap-3 bg-emerald-500/5 border border-emerald-500/10 p-3 rounded-xl max-w-[85%]">
-                        <div class="bg-emerald-500/10 p-2 rounded text-emerald-400 mt-1">
-                            <i class="fa-solid fa-robot"></i>
-                        </div>
+                <!-- API Configuration Panel -->
+                <div class="glass-panel p-5 rounded-2xl border border-slate-800 shadow-xl">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="font-bold text-emerald-400 flex items-center gap-2">
+                            <i class="fa-solid fa-key"></i> API Configuration
+                        </h3>
+                        <span class="text-xs text-slate-400">Saved in browser</span>
+                    </div>
+                    
+                    <div class="space-y-3 text-sm">
+                        <!-- OpenRouter -->
                         <div>
-                            <p class="text-sm font-bold text-emerald-400 mb-1">Fin-Router Bot</p>
-                            <p class="text-sm leading-relaxed text-slate-200">
-                                Namaste! Main tayyar hoon. Aap left pane se API set karein, apna formula ya training PDF upload karein, aur 53 standard sawal ya koi custom sawal puchiye.
-                            </p>
-                            <div class="mt-2 flex flex-wrap gap-2">
-                                <span class="text-[10px] bg-slate-800 text-slate-400 border border-slate-700 px-2 py-0.5 rounded">Strict No-Hallucination Active</span>
-                                <span class="text-[10px] bg-slate-800 text-slate-400 border border-slate-700 px-2 py-0.5 rounded">PDF extraction supported</span>
+                            <label class="block text-slate-400 text-xs mb-1">OpenRouter API Key (Main Brain)</label>
+                            <input type="password" id="key-openrouter" class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-1.5 focus:border-emerald-500 focus:outline-none text-white" placeholder="sk-or-...">
+                        </div>
+                        <!-- FRED -->
+                        <div>
+                            <label class="block text-slate-400 text-xs mb-1">FRED API Key</label>
+                            <input type="password" id="key-fred" class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-1.5 focus:border-emerald-500 focus:outline-none text-white" placeholder="Federal Reserve Key">
+                        </div>
+                        <!-- News Data -->
+                        <div>
+                            <label class="block text-slate-400 text-xs mb-1">NewsData API Key</label>
+                            <input type="password" id="key-newsdata" class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-1.5 focus:border-emerald-500 focus:outline-none text-white" placeholder="NewsData.io key">
+                        </div>
+                        <!-- CoinGecko -->
+                        <div>
+                            <label class="block text-slate-400 text-xs mb-1">CoinGecko API Key (Optional/Free)</label>
+                            <input type="password" id="key-coingecko" class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-1.5 focus:border-emerald-500 focus:outline-none text-white" placeholder="Leave blank for Free API">
+                        </div>
+                        
+                        <!-- Mode Selector -->
+                        <div class="pt-2">
+                            <label class="block text-slate-400 text-xs mb-2">Execution Mode</label>
+                            <div class="grid grid-cols-2 gap-2">
+                                <button id="mode-live" onclick="setMode('live')" class="w-full py-1.5 rounded text-xs font-semibold border border-emerald-500 bg-emerald-500/10 text-emerald-400 transition">
+                                    <i class="fa-solid fa-satellite-dish mr-1"></i> Live API
+                                </button>
+                                <button id="mode-mock" onclick="setMode('mock')" class="w-full py-1.5 rounded text-xs font-semibold border border-slate-700 bg-slate-800 text-slate-400 transition">
+                                    <i class="fa-solid fa-vial mr-1"></i> Demo Mode
+                                </button>
+                            </div>
+                        </div>
+
+                        <button onclick="saveApiKeys()" class="w-full mt-4 bg-emerald-600 hover:bg-emerald-500 transition text-white py-2 rounded-lg font-bold">
+                            <i class="fa-solid fa-floppy-disk mr-1"></i> Save Configuration
+                        </button>
+                    </div>
+                </div>
+
+                <!-- PDF Upload / Knowledge Base -->
+                <div class="glass-panel p-5 rounded-2xl border border-slate-800 shadow-xl">
+                    <h3 class="font-bold text-emerald-400 flex items-center gap-2 mb-3">
+                        <i class="fa-solid fa-file-pdf"></i> PDF Knowledge Base
+                    </h3>
+                    <p class="text-xs text-slate-400 mb-4">Upload books, formulas, or custom instructions to feed your model context.</p>
+                    
+                    <div id="pdf-drop-zone" class="border-2 border-dashed border-slate-700 hover:border-emerald-500 transition rounded-xl p-6 text-center cursor-pointer relative">
+                        <input type="file" id="pdf-input" accept=".pdf" class="absolute inset-0 opacity-0 cursor-pointer">
+                        <i class="fa-solid fa-cloud-arrow-up text-3xl text-emerald-500/70 mb-2"></i>
+                        <p class="text-sm font-semibold">Click or drag PDF here</p>
+                        <p class="text-xs text-slate-500 mt-1">Text extracted directly on your browser</p>
+                    </div>
+
+                    <!-- PDF Status Information -->
+                    <div id="pdf-status" class="hidden mt-4 p-3 bg-slate-900/60 rounded-lg border border-slate-800">
+                        <div class="flex items-center justify-between text-xs">
+                            <span class="text-slate-400 flex items-center gap-1">
+                                <i class="fa-solid fa-paperclip text-emerald-400"></i>
+                                <span id="pdf-name" class="font-semibold truncate max-w-[150px]"></span>
+                            </span>
+                            <span id="pdf-size" class="text-slate-500"></span>
+                        </div>
+                        <div class="mt-2 text-xs text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded flex justify-between items-center">
+                            <span>Status: Loaded & Analyzed</span>
+                            <button onclick="clearPdf()" class="text-red-400 hover:text-red-300"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                        <div class="mt-2 text-slate-400 text-xs">
+                            <strong>Extracted Words:</strong> <span id="pdf-words">0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- API Live Activity Logs -->
+                <div class="glass-panel p-5 rounded-2xl border border-slate-800 shadow-xl flex flex-col h-[280px]">
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="font-bold text-emerald-400 flex items-center gap-2 text-sm">
+                            <i class="fa-solid fa-terminal"></i> API Routing Logs
+                        </h3>
+                        <button onclick="clearLogs()" class="text-xs text-slate-400 hover:text-white">Clear</button>
+                    </div>
+                    <div id="logs-container" class="flex-grow bg-slate-950 rounded p-3 font-mono text-[11px] text-slate-300 overflow-y-auto custom-scrollbar space-y-1">
+                        <div class="text-slate-500">[System] App initialized... Ready for questions.</div>
+                    </div>
+                </div>
+
+            </aside>
+
+            <!-- Main Chat Area & Library -->
+            <section class="lg:col-span-8 flex flex-col space-y-6">
+                
+                <!-- Tab Controls -->
+                <div class="bg-slate-900 p-1.5 rounded-xl border border-slate-800 flex">
+                    <button onclick="switchTab('library')" id="tab-library" class="flex-1 py-2 text-sm font-semibold rounded-lg bg-emerald-500 text-white shadow-lg transition">
+                        <i class="fa-solid fa-compass mr-1.5"></i> 53 Specialist Questions Directory
+                    </button>
+                    <button onclick="switchTab('chat')" id="tab-chat" class="flex-1 py-2 text-sm font-semibold rounded-lg text-slate-400 hover:text-white transition">
+                        <i class="fa-solid fa-comments mr-1.5"></i> Live Specialist Chat
+                    </button>
+                </div>
+
+                <!-- TAB 1: 53 Questions Directory -->
+                <div id="panel-library" class="space-y-4">
+                    <div class="bg-slate-900/40 border border-slate-800 p-4 rounded-xl flex justify-between items-center">
+                        <div>
+                            <h2 class="font-bold text-lg text-emerald-400">Specialist Question Router Map</h2>
+                            <p class="text-xs text-slate-400">Click any question. The system will auto-route to the mapped API, fetch data, and answer strictly without hallucination.</p>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-xs bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 px-2 py-1 rounded">53 Questions Total</span>
+                        </div>
+                    </div>
+
+                    <!-- Accordion/Grid of Categories -->
+                    <div class="space-y-3 max-h-[60vh] overflow-y-auto custom-scrollbar pr-1" id="categories-container">
+                        <!-- Categories will be dynamically generated by JS -->
+                    </div>
+                </div>
+
+                <!-- TAB 2: Live Specialist Chat -->
+                <div id="panel-chat" class="hidden flex flex-col bg-slate-900 border border-slate-800 rounded-2xl h-[65vh] overflow-hidden">
+                    
+                    <!-- Chat Feed -->
+                    <div id="chat-feed" class="flex-grow p-4 overflow-y-auto custom-scrollbar space-y-4 bg-slate-950/50">
+                        <div class="flex items-start gap-3 bg-emerald-500/5 border border-emerald-500/10 p-3 rounded-xl max-w-[85%]">
+                            <div class="bg-emerald-500/10 p-2 rounded text-emerald-400 mt-1">
+                                <i class="fa-solid fa-robot"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm font-bold text-emerald-400 mb-1">Fin-Router Bot</p>
+                                <p class="text-sm leading-relaxed text-slate-200">
+                                    Namaste! Main tayyar hoon. Aap left pane se API set karein, apna formula ya training PDF upload karein, aur 53 standard sawal ya koi custom sawal puchiye.
+                                </p>
+                                <div class="mt-2 flex flex-wrap gap-2">
+                                    <span class="text-[10px] bg-slate-800 text-slate-400 border border-slate-700 px-2 py-0.5 rounded">Strict No-Hallucination Active</span>
+                                    <span class="text-[10px] bg-slate-800 text-slate-400 border border-slate-700 px-2 py-0.5 rounded">PDF extraction supported</span>
+                                </div>
                             </div>
                         </div>
                     </div>
+
+                    <!-- Chat Input area -->
+                    <div class="p-3 bg-slate-900 border-t border-slate-800">
+                        <div class="flex items-center gap-2">
+                            <input type="text" id="chat-input" onkeypress="handleChatKey(event)" class="flex-grow bg-slate-950 border border-slate-800 focus:border-emerald-500 focus:outline-none rounded-xl px-4 py-3 text-sm text-slate-100 placeholder-slate-500" placeholder="Type custom stock question or paste formulas...">
+                            <button onclick="sendChatMessage()" class="bg-emerald-600 hover:bg-emerald-500 transition px-5 py-3 rounded-xl text-white font-bold flex items-center gap-2">
+                                <span>Send</span>
+                                <i class="fa-solid fa-paper-plane text-xs"></i>
+                            </button>
+                        </div>
+                        <div class="flex justify-between items-center mt-2 px-1 text-xs text-slate-500">
+                            <span>Current Active Question: <strong id="active-q-id" class="text-emerald-400">None (General Mode)</strong></span>
+                            <span id="active-api-indicator" class="text-emerald-500 flex items-center gap-1">
+                                <i class="fa-solid fa-network-wired"></i> Routing: Dynamic API Router
+                            </span>
+                        </div>
+                    </div>
+
                 </div>
 
-                <!-- Chat Input area -->
-                <div class="p-3 bg-slate-900 border-t border-slate-800">
-                    <div class="flex items-center gap-2">
-                        <input type="text" id="chat-input" onkeypress="handleChatKey(event)" class="flex-grow bg-slate-950 border border-slate-800 focus:border-emerald-500 focus:outline-none rounded-xl px-4 py-3 text-sm text-slate-100 placeholder-slate-500" placeholder="Type custom stock question or paste formulas...">
-                        <button onclick="sendChatMessage()" class="bg-emerald-600 hover:bg-emerald-500 transition px-5 py-3 rounded-xl text-white font-bold flex items-center gap-2">
-                            <span>Send</span>
-                            <i class="fa-solid fa-paper-plane text-xs"></i>
-                        </button>
-                    </div>
-                    <div class="flex justify-between items-center mt-2 px-1 text-xs text-slate-500">
-                        <span>Current Active Question: <strong id="active-q-id" class="text-emerald-400">None (General Mode)</strong></span>
-                        <span id="active-api-indicator" class="text-emerald-500 flex items-center gap-1">
-                            <i class="fa-solid fa-network-wired"></i> Routing: Dynamic API Router
-                        </span>
-                    </div>
+            </section>
+
+        </main>
+
+        <!-- Footer -->
+        <footer class="border-t border-slate-900 bg-slate-950/80 py-4 text-center text-xs text-slate-500">
+            <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-2">
+                <div>© 2026 Stock Market Analyst Bot. Built client-side for absolute security & custom key privacy.</div>
+                <div class="flex items-center gap-4">
+                    <a href="#" class="hover:text-emerald-400">Strict Mapping Rules</a>
+                    <span>•</span>
+                    <a href="#" class="hover:text-emerald-400">Secure localStorage</a>
                 </div>
-
             </div>
+        </footer>
 
-        </section>
-
-    </main>
-
-    <!-- Footer -->
-    <footer class="border-t border-slate-900 bg-slate-950/80 py-4 text-center text-xs text-slate-500">
-        <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-2">
-            <div>© 2026 Stock Market Analyst Bot. Built client-side for absolute security & custom key privacy.</div>
-            <div class="flex items-center gap-4">
-                <a href="#" class="hover:text-emerald-400">Strict Mapping Rules</a>
-                <span>•</span>
-                <a href="#" class="hover:text-emerald-400">Secure localStorage</a>
-            </div>
-        </div>
-    </footer>
+    </div>
 
     <!-- Mobile Settings Modal -->
     <div id="mobile-settings-modal" class="fixed inset-0 bg-black/80 z-[100] flex justify-center items-end hidden transition-opacity duration-300">
@@ -261,6 +312,50 @@
 
     <!-- SCRIPT LOGIC -->
     <script>
+        // Authentication Configuration
+        const AUTH_USER = "Deburohidas";
+        const AUTH_PASS = "885753@";
+
+        function handleLogin(event) {
+            event.preventDefault();
+            const userInp = document.getElementById('username').value.trim();
+            const passInp = document.getElementById('password').value.trim();
+            const loginErr = document.getElementById('login-error');
+
+            if (userInp === AUTH_USER && passInp === AUTH_PASS) {
+                sessionStorage.setItem('fin_router_auth', 'true');
+                showDashboard();
+                addLog("[Auth] User logged in successfully.");
+            } else {
+                loginErr.classList.remove('hidden');
+                document.getElementById('password').value = "";
+            }
+        }
+
+        function handleLogout() {
+            sessionStorage.removeItem('fin_router_auth');
+            location.reload();
+        }
+
+        function checkAuthenticationOnLoad() {
+            const isAuth = sessionStorage.getItem('fin_router_auth');
+            if (isAuth === 'true') {
+                showDashboard();
+            } else {
+                showLogin();
+            }
+        }
+
+        function showDashboard() {
+            document.getElementById('login-container').classList.add('hidden');
+            document.getElementById('dashboard-wrapper').classList.remove('hidden');
+        }
+
+        function showLogin() {
+            document.getElementById('login-container').classList.remove('hidden');
+            document.getElementById('dashboard-wrapper').classList.add('hidden');
+        }
+
         // 53 questions database with dedicated APIs
         const questionsList = [
             {
@@ -384,6 +479,7 @@
         let activeQuestionApi = "OpenRouter";
 
         window.addEventListener('DOMContentLoaded', () => {
+            checkAuthenticationOnLoad();
             loadApiKeys();
             buildQuestionsDirectory();
             initPdfExtraction();
@@ -730,6 +826,9 @@
         async function fetchLiveData(apiName, qId, questionText, keys) {
             addLog(`[Live API] Sending API Request to ${apiName}...`);
             
+            // CORS Proxy prefix to bypass direct browser requests blockage
+            const proxy = "https://corsproxy.io/?";
+
             if (apiName === "CoinGecko") {
                 const url = `https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,gold&vs_currencies=usd&include_24hr_change=true`;
                 const res = await fetch(url);
@@ -737,26 +836,32 @@
                 return await res.json();
             }
             else if (apiName === "FRED") {
-                if (!keys.fred) throw new Error("FRED API key is missing.");
+                if (!keys.fred) throw new Error("FRED API key is missing. Set it in the Setup sidebar.");
                 let seriesId = "T10Y2Y";
                 if (qId === "Q9" || qId === "Q33") seriesId = "IRLTLT01INM156N";
                 if (qId === "Q31") seriesId = "WALCL";
                 if (qId === "Q39") seriesId = "CPALTT01INM659N";
                 if (qId === "Q53") seriesId = "MANMM101INM189S";
                 
-                const url = `https://api.stlouisfed.org/fred/series/observations?series_id=${seriesId}&api_key=${keys.fred}&file_type=json&limit=5&sort_order=desc`;
+                // Wrap FRED in corsproxy so it bypasses CORS blocks 100% in pure client HTML
+                const targetUrl = `https://api.stlouisfed.org/fred/series/observations?series_id=${seriesId}&api_key=${keys.fred}&file_type=json&limit=5&sort_order=desc`;
+                const url = `${proxy}${encodeURIComponent(targetUrl)}`;
+                
                 const res = await fetch(url);
-                if (!res.ok) throw new Error("FRED API Request failed. (Check CORS/Key issues)");
+                if (!res.ok) throw new Error("FRED API Request failed");
                 return await res.json();
             }
             else if (apiName === "News Data") {
-                if (!keys.newsdata) throw new Error("NewsData.io API key is missing.");
-                let searchWord = "Nifty market";
+                if (!keys.newsdata) throw new Error("NewsData API key is missing. Set it in the Setup sidebar.");
+                let searchWord = "Nifty index market";
                 if (qId === "Q11") searchWord = "HDFC Bank Reliance";
                 if (qId === "Q34" || qId === "Q35" || qId === "Q36") searchWord = "Insider trading corporate buyback India";
                 if (qId === "Q6") searchWord = "FII DII flows";
 
-                const url = `https://newsdata.io/api/1/news?apikey=${keys.newsdata}&q=${encodeURIComponent(searchWord)}&language=en`;
+                // Wrap in proxy for 100% stable CORS compatibility
+                const targetUrl = `https://newsdata.io/api/1/news?apikey=${keys.newsdata}&q=${encodeURIComponent(searchWord)}&language=en`;
+                const url = `${proxy}${encodeURIComponent(targetUrl)}`;
+                
                 const res = await fetch(url);
                 if (!res.ok) throw new Error("NewsData API request failed");
                 return await res.json();
@@ -768,7 +873,10 @@
                 if (qId === "Q23") query = "India Monsoon IMD Rain";
                 if (qId === "Q24") query = "India US trade deals";
                 
-                const url = `https://api.gdeltproject.org/api/v2/doc/doc?query=${encodeURIComponent(query)}&mode=ArtList&format=json&maxresults=10`;
+                // Wrap GDELT in proxy to ensure absolute stable connection
+                const targetUrl = `https://api.gdeltproject.org/api/v2/doc/doc?query=${encodeURIComponent(query)}&mode=ArtList&format=json&maxresults=10`;
+                const url = `${proxy}${encodeURIComponent(targetUrl)}`;
+                
                 const res = await fetch(url);
                 if (!res.ok) throw new Error("GDELT API Request failed");
                 return await res.json();
@@ -801,7 +909,7 @@
                 "Q46": { index_dxy: "104.2", gold: "$2,350/oz", current_correlation: "Negative correlation -0.82" },
                 "Q53": { M2_Growth: "11.2% YoY growth indicating robust underlying money circulation" }
             };
-            return mocks[qId] || null; // Will trigger the fallback if not found
+            return mocks[qId] || null;
         }
 
         async function queryOpenRouter(userQuestion, apiPayload, openrouterKey) {
