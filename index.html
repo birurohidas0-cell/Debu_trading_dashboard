@@ -1,0 +1,2588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Market Research AI Assistant v2.0</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  
+  :root {
+    --bg-dark: #0a0a0f;
+    --bg-panel: #111118;
+    --bg-card: #1a1a24;
+    --bg-input: #12121a;
+    --accent-blue: #3b82f6;
+    --accent-green: #10b981;
+    --accent-red: #ef4444;
+    --accent-yellow: #f59e0b;
+    --accent-purple: #8b5cf6;
+    --text-primary: #f1f5f9;
+    --text-secondary: #94a3b8;
+    --text-muted: #475569;
+    --border: #1e2030;
+    --border-active: #3b82f6;
+    --sidebar-width: 340px;
+  }
+
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: var(--bg-dark);
+    color: var(--text-primary);
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ===== HEADER ===== */
+  .header {
+    background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 50%, #0f0f1a 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+    z-index: 100;
+  }
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .logo {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+  }
+
+  .header-title h1 {
+    font-size: 18px;
+    font-weight: 700;
+    background: linear-gradient(135deg, #60a5fa, #a78bfa);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .header-title p {
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .api-status {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 12px;
+  }
+
+  .status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--accent-red);
+    animation: pulse 2s infinite;
+  }
+
+  .status-dot.active { background: var(--accent-green); }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  .btn-header {
+    padding: 7px 14px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text-secondary);
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-header:hover {
+    border-color: var(--accent-blue);
+    color: var(--accent-blue);
+  }
+
+  /* ===== MAIN LAYOUT ===== */
+  .main-layout {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+  }
+
+  /* ===== SIDEBAR ===== */
+  .sidebar {
+    width: var(--sidebar-width);
+    background: var(--bg-panel);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    flex-shrink: 0;
+    transition: width 0.3s;
+  }
+
+  .sidebar.collapsed { width: 0; }
+
+  .sidebar-header {
+    padding: 16px;
+    border-bottom: 1px solid var(--border);
+    background: linear-gradient(135deg, #1a1a2e, #111118);
+  }
+
+  .sidebar-header h2 {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--accent-blue);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+  }
+
+  .sidebar-header p {
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  .sidebar-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px;
+  }
+
+  .sidebar-content::-webkit-scrollbar { width: 4px; }
+  .sidebar-content::-webkit-scrollbar-track { background: transparent; }
+  .sidebar-content::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  /* ===== API CONFIG SECTION ===== */
+  .section-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin-bottom: 10px;
+    overflow: hidden;
+  }
+
+  .section-header {
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .section-header:hover { background: rgba(59, 130, 246, 0.05); }
+
+  .section-title {
+    font-size: 12px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-primary);
+  }
+
+  .section-toggle {
+    font-size: 10px;
+    color: var(--text-muted);
+    transition: transform 0.2s;
+  }
+
+  .section-toggle.open { transform: rotate(180deg); }
+
+  .section-body {
+    padding: 12px 14px;
+    border-top: 1px solid var(--border);
+    display: none;
+  }
+
+  .section-body.open { display: block; }
+
+  /* ===== INPUTS ===== */
+  .input-group {
+    margin-bottom: 10px;
+  }
+
+  .input-group label {
+    display: block;
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-bottom: 5px;
+    font-weight: 500;
+  }
+
+  .input-group input,
+  .input-group textarea,
+  .input-group select {
+    width: 100%;
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    padding: 8px 10px;
+    color: var(--text-primary);
+    font-size: 12px;
+    outline: none;
+    transition: border-color 0.2s;
+    font-family: inherit;
+  }
+
+  .input-group input:focus,
+  .input-group textarea:focus {
+    border-color: var(--accent-blue);
+  }
+
+  .input-group textarea {
+    resize: vertical;
+    min-height: 80px;
+    line-height: 1.5;
+  }
+
+  .input-group input[type="password"] {
+    font-family: monospace;
+    letter-spacing: 2px;
+  }
+
+  /* ===== UPLOAD AREA ===== */
+  .upload-area {
+    border: 2px dashed var(--border);
+    border-radius: 8px;
+    padding: 16px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    margin-bottom: 8px;
+  }
+
+  .upload-area:hover {
+    border-color: var(--accent-blue);
+    background: rgba(59, 130, 246, 0.05);
+  }
+
+  .upload-area.dragover {
+    border-color: var(--accent-green);
+    background: rgba(16, 185, 129, 0.05);
+  }
+
+  .upload-area input[type="file"] {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+    width: 100%;
+    height: 100%;
+  }
+
+  .upload-icon { font-size: 24px; margin-bottom: 6px; }
+
+  .upload-text {
+    font-size: 11px;
+    color: var(--text-muted);
+    line-height: 1.4;
+  }
+
+  .upload-text span {
+    color: var(--accent-blue);
+    font-weight: 600;
+  }
+
+  /* ===== FILE LIST ===== */
+  .file-list {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin-top: 8px;
+  }
+
+  .file-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 10px;
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 11px;
+  }
+
+  .file-icon { font-size: 14px; }
+
+  .file-name {
+    flex: 1;
+    color: var(--text-secondary);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .file-size { color: var(--text-muted); font-size: 10px; }
+
+  .file-remove {
+    cursor: pointer;
+    color: var(--accent-red);
+    opacity: 0.6;
+    transition: opacity 0.2s;
+    background: none;
+    border: none;
+    font-size: 12px;
+    padding: 0;
+  }
+
+  .file-remove:hover { opacity: 1; }
+
+  /* ===== BUTTONS ===== */
+  .btn {
+    width: 100%;
+    padding: 9px 14px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+    color: white;
+  }
+
+  .btn-primary:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+  }
+
+  .btn-success {
+    background: linear-gradient(135deg, var(--accent-green), #059669);
+    color: white;
+  }
+
+  .btn-success:hover { opacity: 0.9; }
+
+  .btn-danger {
+    background: linear-gradient(135deg, var(--accent-red), #dc2626);
+    color: white;
+  }
+
+  .btn-outline {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+  }
+
+  .btn-outline:hover {
+    border-color: var(--accent-blue);
+    color: var(--accent-blue);
+  }
+
+  .btn-sm {
+    width: auto;
+    padding: 6px 12px;
+    font-size: 11px;
+  }
+
+  /* ===== BRAIN STATUS ===== */
+  .brain-status {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin-bottom: 10px;
+  }
+
+  .brain-stat {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 10px;
+    background: var(--bg-input);
+    border-radius: 6px;
+    font-size: 11px;
+  }
+
+  .brain-stat-label { color: var(--text-muted); }
+  .brain-stat-value { color: var(--accent-green); font-weight: 600; }
+
+  /* ===== QUESTION PILLS ===== */
+  .q-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-bottom: 8px;
+  }
+
+  .q-pill {
+    padding: 4px 8px;
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    font-size: 10px;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .q-pill:hover {
+    border-color: var(--accent-blue);
+    color: var(--accent-blue);
+  }
+
+  /* ===== CHAT AREA ===== */
+  .chat-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: var(--bg-dark);
+  }
+
+  .chat-toolbar {
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+    background: var(--bg-panel);
+  }
+
+  .toolbar-btn {
+    padding: 6px 12px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text-secondary);
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .toolbar-btn:hover {
+    border-color: var(--accent-blue);
+    color: var(--accent-blue);
+  }
+
+  .toolbar-btn.active {
+    background: rgba(59, 130, 246, 0.1);
+    border-color: var(--accent-blue);
+    color: var(--accent-blue);
+  }
+
+  .toolbar-sep {
+    width: 1px;
+    height: 20px;
+    background: var(--border);
+  }
+
+  .toolbar-right {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* ===== MESSAGES ===== */
+  .messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .messages::-webkit-scrollbar { width: 5px; }
+  .messages::-webkit-scrollbar-track { background: transparent; }
+  .messages::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  /* ===== WELCOME MESSAGE ===== */
+  .welcome-card {
+    background: linear-gradient(135deg, #1a1a2e, #1e1e3a);
+    border: 1px solid rgba(59, 130, 246, 0.2);
+    border-radius: 14px;
+    padding: 24px;
+    text-align: center;
+    margin: auto;
+    max-width: 600px;
+    width: 100%;
+  }
+
+  .welcome-icon { font-size: 48px; margin-bottom: 12px; }
+
+  .welcome-card h2 {
+    font-size: 22px;
+    font-weight: 700;
+    background: linear-gradient(135deg, #60a5fa, #a78bfa);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 8px;
+  }
+
+  .welcome-card p {
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.6;
+    margin-bottom: 16px;
+  }
+
+  .quick-btns {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+  }
+
+  .quick-btn {
+    padding: 8px 14px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text-secondary);
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .quick-btn:hover {
+    border-color: var(--accent-blue);
+    color: var(--accent-blue);
+    background: rgba(59, 130, 246, 0.05);
+  }
+
+  /* ===== MESSAGE BUBBLES ===== */
+  .msg {
+    display: flex;
+    gap: 10px;
+    max-width: 900px;
+    animation: fadeIn 0.3s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .msg.user { flex-direction: row-reverse; margin-left: auto; }
+
+  .msg-avatar {
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+
+  .msg.user .msg-avatar {
+    background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+  }
+
+  .msg.ai .msg-avatar {
+    background: linear-gradient(135deg, #1e2a3a, #1a2030);
+    border: 1px solid var(--border);
+  }
+
+  .msg-content { flex: 1; max-width: 820px; }
+
+  .msg-bubble {
+    padding: 12px 16px;
+    border-radius: 12px;
+    font-size: 13px;
+    line-height: 1.7;
+  }
+
+  .msg.user .msg-bubble {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(139, 92, 246, 0.2));
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    border-radius: 12px 4px 12px 12px;
+  }
+
+  .msg.ai .msg-bubble {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 4px 12px 12px 12px;
+  }
+
+  .msg-image {
+    max-width: 300px;
+    border-radius: 8px;
+    margin-top: 8px;
+    border: 1px solid var(--border);
+  }
+
+  .msg-time {
+    font-size: 10px;
+    color: var(--text-muted);
+    margin-top: 4px;
+    text-align: right;
+  }
+
+  .msg.ai .msg-time { text-align: left; }
+
+  /* ===== AI RESPONSE SECTIONS ===== */
+  .ai-section {
+    margin-bottom: 12px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    border-left: 3px solid transparent;
+  }
+
+  .ai-section.analysis {
+    background: rgba(59, 130, 246, 0.05);
+    border-left-color: var(--accent-blue);
+  }
+
+  .ai-section.bullish {
+    background: rgba(16, 185, 129, 0.05);
+    border-left-color: var(--accent-green);
+  }
+
+  .ai-section.bearish {
+    background: rgba(239, 68, 68, 0.05);
+    border-left-color: var(--accent-red);
+  }
+
+  .ai-section.neutral {
+    background: rgba(245, 158, 11, 0.05);
+    border-left-color: var(--accent-yellow);
+  }
+
+  .ai-section-title {
+    font-size: 12px;
+    font-weight: 700;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .ai-section-body {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+
+  /* ===== SOURCE BOX ===== */
+  .source-box {
+    margin-top: 12px;
+    padding: 10px 14px;
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+  }
+
+  .source-title {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .source-items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .source-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 10px;
+    border-radius: 5px;
+    font-size: 11px;
+    font-weight: 500;
+  }
+
+  .source-item.active {
+    background: rgba(16, 185, 129, 0.1);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    color: var(--accent-green);
+  }
+
+  .source-item.inactive {
+    background: rgba(71, 85, 105, 0.1);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+  }
+
+  .confidence-bar {
+    margin-top: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .confidence-label {
+    font-size: 11px;
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+
+  .confidence-track {
+    flex: 1;
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .confidence-fill {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 0.5s ease;
+  }
+
+  .confidence-value {
+    font-size: 11px;
+    font-weight: 600;
+    min-width: 35px;
+    text-align: right;
+  }
+
+  /* ===== PROBABILITY CARD ===== */
+  .prob-card {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+  }
+
+  .prob-item {
+    padding: 10px;
+    border-radius: 8px;
+    text-align: center;
+  }
+
+  .prob-item.bull {
+    background: rgba(16, 185, 129, 0.1);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+  }
+
+  .prob-item.bear {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+  }
+
+  .prob-item.neut {
+    background: rgba(245, 158, 11, 0.1);
+    border: 1px solid rgba(245, 158, 11, 0.2);
+  }
+
+  .prob-pct {
+    font-size: 22px;
+    font-weight: 700;
+    display: block;
+  }
+
+  .prob-item.bull .prob-pct { color: var(--accent-green); }
+  .prob-item.bear .prob-pct { color: var(--accent-red); }
+  .prob-item.neut .prob-pct { color: var(--accent-yellow); }
+
+  .prob-label {
+    font-size: 11px;
+    color: var(--text-muted);
+    display: block;
+    margin-top: 2px;
+  }
+
+  /* ===== THINKING ANIMATION ===== */
+  .thinking {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+  }
+
+  .thinking-dots {
+    display: flex;
+    gap: 4px;
+  }
+
+  .thinking-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent-blue);
+    animation: bounce 1.2s infinite;
+  }
+
+  .thinking-dot:nth-child(2) { animation-delay: 0.2s; }
+  .thinking-dot:nth-child(3) { animation-delay: 0.4s; }
+
+  @keyframes bounce {
+    0%, 60%, 100% { transform: translateY(0); opacity: 0.5; }
+    30% { transform: translateY(-6px); opacity: 1; }
+  }
+
+  .thinking-steps {
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  .thinking-step {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 2px;
+    opacity: 0;
+    animation: stepIn 0.3s forwards;
+  }
+
+  @keyframes stepIn {
+    to { opacity: 1; }
+  }
+
+  /* ===== CHAT INPUT ===== */
+  .chat-input-area {
+    padding: 12px 16px;
+    border-top: 1px solid var(--border);
+    background: var(--bg-panel);
+    flex-shrink: 0;
+  }
+
+  .attached-files {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 8px;
+  }
+
+  .attached-file {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 10px;
+    background: rgba(59, 130, 246, 0.1);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    border-radius: 6px;
+    font-size: 11px;
+    color: var(--accent-blue);
+  }
+
+  .attached-file button {
+    background: none;
+    border: none;
+    color: var(--accent-red);
+    cursor: pointer;
+    font-size: 12px;
+    padding: 0;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+  }
+
+  .attached-file button:hover { opacity: 1; }
+
+  .chat-input-row {
+    display: flex;
+    gap: 8px;
+    align-items: flex-end;
+  }
+
+  .input-attach-btns {
+    display: flex;
+    gap: 5px;
+  }
+
+  .attach-btn {
+    width: 36px;
+    height: 36px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text-muted);
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    flex-shrink: 0;
+  }
+
+  .attach-btn:hover {
+    border-color: var(--accent-blue);
+    color: var(--accent-blue);
+  }
+
+  .attach-btn input[type="file"] {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+    width: 100%;
+    height: 100%;
+  }
+
+  .chat-textarea {
+    flex: 1;
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 14px;
+    color: var(--text-primary);
+    font-size: 13px;
+    font-family: inherit;
+    resize: none;
+    outline: none;
+    min-height: 40px;
+    max-height: 120px;
+    line-height: 1.5;
+    transition: border-color 0.2s;
+  }
+
+  .chat-textarea:focus { border-color: var(--accent-blue); }
+
+  .chat-textarea::placeholder { color: var(--text-muted); }
+
+  .send-btn {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+    border: none;
+    border-radius: 10px;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .send-btn:hover {
+    opacity: 0.9;
+    transform: scale(1.05);
+  }
+
+  .send-btn:disabled {
+    opacity: 0.5;
+    transform: none;
+    cursor: not-allowed;
+  }
+
+  /* ===== MODAL ===== */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 20px;
+  }
+
+  .modal-overlay.open { display: flex; }
+
+  .modal {
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 24px;
+    max-width: 500px;
+    width: 100%;
+    max-height: 80vh;
+    overflow-y: auto;
+  }
+
+  .modal h3 {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .modal-btns {
+    display: flex;
+    gap: 8px;
+    margin-top: 16px;
+  }
+
+  /* ===== ANALYSIS TABLE ===== */
+  .analysis-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+    margin-top: 8px;
+  }
+
+  .analysis-table th {
+    padding: 7px 10px;
+    background: var(--bg-input);
+    color: var(--text-muted);
+    text-align: left;
+    font-weight: 600;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .analysis-table td {
+    padding: 7px 10px;
+    border-bottom: 1px solid rgba(30,32,48,0.5);
+    color: var(--text-secondary);
+    vertical-align: top;
+  }
+
+  .analysis-table tr:hover td { background: rgba(59,130,246,0.03); }
+
+  .tag {
+    display: inline-block;
+    padding: 2px 7px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 600;
+  }
+
+  .tag-bull {
+    background: rgba(16,185,129,0.15);
+    color: var(--accent-green);
+  }
+
+  .tag-bear {
+    background: rgba(239,68,68,0.15);
+    color: var(--accent-red);
+  }
+
+  .tag-neut {
+    background: rgba(245,158,11,0.15);
+    color: var(--accent-yellow);
+  }
+
+  .tag-na {
+    background: rgba(71,85,105,0.15);
+    color: var(--text-muted);
+  }
+
+  /* ===== SCROLLBAR ===== */
+  .messages::-webkit-scrollbar { width: 5px; }
+  .messages::-webkit-scrollbar-thumb { background: rgba(59,130,246,0.2); border-radius: 3px; }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 768px) {
+    :root { --sidebar-width: 280px; }
+    .sidebar { position: absolute; z-index: 200; height: 100%; }
+    .sidebar.collapsed { width: 0; overflow: hidden; }
+    .prob-card { grid-template-columns: repeat(3, 1fr); }
+  }
+
+  /* ===== DIVIDER ===== */
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 10px 0;
+  }
+
+  /* ===== HIGHLIGHT ===== */
+  .highlight-blue { color: var(--accent-blue); }
+  .highlight-green { color: var(--accent-green); }
+  .highlight-red { color: var(--accent-red); }
+  .highlight-yellow { color: var(--accent-yellow); }
+  .highlight-purple { color: var(--accent-purple); }
+
+  /* ===== TOAST ===== */
+  .toast-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 2000;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .toast {
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 500;
+    animation: toastIn 0.3s ease, toastOut 0.3s ease 2.7s forwards;
+    max-width: 300px;
+  }
+
+  .toast.success {
+    background: rgba(16,185,129,0.2);
+    border: 1px solid rgba(16,185,129,0.4);
+    color: var(--accent-green);
+  }
+
+  .toast.error {
+    background: rgba(239,68,68,0.2);
+    border: 1px solid rgba(239,68,68,0.4);
+    color: var(--accent-red);
+  }
+
+  .toast.info {
+    background: rgba(59,130,246,0.2);
+    border: 1px solid rgba(59,130,246,0.4);
+    color: var(--accent-blue);
+  }
+
+  @keyframes toastIn {
+    from { opacity: 0; transform: translateX(20px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  @keyframes toastOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ========== HEADER ========== -->
+<header class="header">
+  <div class="header-left">
+    <div class="logo">🧠</div>
+    <div class="header-title">
+      <h1>Market Research AI v2.0</h1>
+      <p>Professional Market Intelligence Assistant</p>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="api-status" id="apiStatus">
+      <div class="status-dot" id="statusDot"></div>
+      <span id="statusText">API Not Connected</span>
+    </div>
+    <button class="btn-header" onclick="toggleSidebar()">⚡ Knowledge Center</button>
+    <button class="btn-header" onclick="clearChat()">🗑️ Clear Chat</button>
+  </div>
+</header>
+
+<!-- ========== MAIN LAYOUT ========== -->
+<div class="main-layout">
+
+  <!-- ========== SIDEBAR / KNOWLEDGE CENTER ========== -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <h2>🧠 Knowledge Center</h2>
+      <p>AI ka Brain — Yahan sab data store hoga</p>
+    </div>
+
+    <div class="sidebar-content">
+
+      <!-- API Configuration -->
+      <div class="section-card">
+        <div class="section-header" onclick="toggleSection('apiSection')">
+          <span class="section-title">🔑 Gemini API Setup</span>
+          <span class="section-toggle open" id="apiSectionToggle">▼</span>
+        </div>
+        <div class="section-body open" id="apiSection">
+          <div class="input-group">
+            <label>Gemini API Key</label>
+            <input type="password" id="apiKeyInput" placeholder="AIza..." />
+          </div>
+          <div class="input-group">
+            <label>Model</label>
+            <select id="modelSelect">
+              <option value="gemini-1.5-flash">gemini-1.5-flash (Fast)</option>
+              <option value="gemini-1.5-pro">gemini-1.5-pro (Powerful)</option>
+              <option value="gemini-2.0-flash">gemini-2.0-flash (Latest)</option>
+            </select>
+          </div>
+          <button class="btn btn-primary" onclick="connectAPI()">
+            🔌 Connect API
+          </button>
+        </div>
+      </div>
+
+      <!-- Brain Data -->
+      <div class="section-card">
+        <div class="section-header" onclick="toggleSection('brainSection')">
+          <span class="section-title">🧠 Brain Data (Manual)</span>
+          <span class="section-toggle open" id="brainSectionToggle">▼</span>
+        </div>
+        <div class="section-body open" id="brainSection">
+          <div class="brain-status" id="brainStatus">
+            <div class="brain-stat">
+              <span class="brain-stat-label">📊 Brain Size</span>
+              <span class="brain-stat-value" id="brainSize">0 chars</span>
+            </div>
+            <div class="brain-stat">
+              <span class="brain-stat-label">📄 Documents</span>
+              <span class="brain-stat-value" id="docCount">0 files</span>
+            </div>
+            <div class="brain-stat">
+              <span class="brain-stat-label">💾 Last Saved</span>
+              <span class="brain-stat-value" id="lastSaved">Never</span>
+            </div>
+          </div>
+          <div class="input-group">
+            <label>📋 Paste Brain Data / Market Notes</label>
+            <textarea id="brainData" placeholder="Yahan apna market data, notes, FII/DII data, analysis paste karo...
+
+Example:
+- FII Net: -2500 Cr (Bearish)
+- DII Net: +1800 Cr (Bullish)
+- India VIX: 13.5
+- Nifty PCR: 1.2
+- Max Pain: 23500
+..."></textarea>
+          </div>
+          <div style="display:flex;gap:6px;">
+            <button class="btn btn-success" style="flex:1" onclick="saveBrain()">
+              💾 Save Brain
+            </button>
+            <button class="btn btn-danger btn-sm" onclick="clearBrain()">
+              🗑️
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Document Upload -->
+      <div class="section-card">
+        <div class="section-header" onclick="toggleSection('docsSection')">
+          <span class="section-title">📚 Documents Upload</span>
+          <span class="section-toggle" id="docsSectionToggle">▼</span>
+        </div>
+        <div class="section-body" id="docsSection">
+
+          <div class="upload-area" id="dropZone">
+            <input type="file" id="fileUpload" multiple
+              accept=".pdf,.txt,.doc,.docx,.csv,.xlsx,.xls,.md"
+              onchange="handleFileUpload(event)">
+            <div class="upload-icon">📁</div>
+            <div class="upload-text">
+              <span>Click ya Drag & Drop</span><br>
+              PDF, TXT, DOCX, CSV, Excel, MD<br>
+              Multiple files supported
+            </div>
+          </div>
+
+          <div class="file-list" id="fileList"></div>
+
+          <div style="margin-top:8px;">
+            <button class="btn btn-outline" onclick="clearAllDocs()">
+              🗑️ Sab Documents Hatao
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 53 Questions -->
+      <div class="section-card">
+        <div class="section-header" onclick="toggleSection('questSection')">
+          <span class="section-title">📊 53 Questions Framework</span>
+          <span class="section-toggle" id="questSectionToggle">▼</span>
+        </div>
+        <div class="section-body" id="questSection">
+          <p style="font-size:11px;color:var(--text-muted);margin-bottom:8px;">
+            Chat me type karo:
+          </p>
+          <div class="q-pills">
+            <div class="q-pill" onclick="quickQuery('Full Analysis karo - sabhi 53 questions ke saath')">Full Analysis</div>
+            <div class="q-pill" onclick="quickQuery('Q1 batao')">Q1</div>
+            <div class="q-pill" onclick="quickQuery('Q6 batao')">Q6</div>
+            <div class="q-pill" onclick="quickQuery('Q16 batao')">Q16</div>
+            <div class="q-pill" onclick="quickQuery('Q41-Q50 God Level analysis karo')">Q41-50</div>
+            <div class="q-pill" onclick="quickQuery('Bullish points batao')">Bullish</div>
+            <div class="q-pill" onclick="quickQuery('Bearish points batao')">Bearish</div>
+            <div class="q-pill" onclick="quickQuery('Probability Score nikalo')">Probability</div>
+            <div class="q-pill" onclick="quickQuery('Final Market View batao')">Final View</div>
+            <div class="q-pill" onclick="quickQuery('Global Markets Q1-Q5 analysis')">Global</div>
+            <div class="q-pill" onclick="quickQuery('Options Intelligence Q16-Q18')">Options</div>
+            <div class="q-pill" onclick="quickQuery('Liquidity & Credit Q31-Q33')">Liquidity</div>
+          </div>
+
+          <div style="margin-top:10px;">
+            <button class="btn btn-primary" onclick="quickQuery('Complete Full Analysis karo — Q1 se Q53 tak sab questions ke jawab do. Brain Data, PDFs, Screenshots sab use karo. Bullish/Bearish/Neutral count karo. Probability Score nikalo. Final View do.')">
+              🚀 Full 53Q Analysis Start
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Data Entry -->
+      <div class="section-card">
+        <div class="section-header" onclick="toggleSection('quickDataSection')">
+          <span class="section-title">⚡ Quick Market Data</span>
+          <span class="section-toggle" id="quickDataSectionToggle">▼</span>
+        </div>
+        <div class="section-body" id="quickDataSection">
+          <div class="input-group">
+            <label>Nifty Level</label>
+            <input type="text" id="niftyLevel" placeholder="e.g. 23456" />
+          </div>
+          <div class="input-group">
+            <label>India VIX</label>
+            <input type="text" id="vixLevel" placeholder="e.g. 13.5" />
+          </div>
+          <div class="input-group">
+            <label>PCR (Put-Call Ratio)</label>
+            <input type="text" id="pcrLevel" placeholder="e.g. 1.25" />
+          </div>
+          <div class="input-group">
+            <label>FII Flow (₹ Cr)</label>
+            <input type="text" id="fiiFlow" placeholder="e.g. -2500 (negative = sell)" />
+          </div>
+          <div class="input-group">
+            <label>DII Flow (₹ Cr)</label>
+            <input type="text" id="diiFlow" placeholder="e.g. +1800" />
+          </div>
+          <div class="input-group">
+            <label>GIFT Nifty</label>
+            <input type="text" id="giftNifty" placeholder="e.g. 23480 (+24)" />
+          </div>
+          <div class="input-group">
+            <label>Max Pain</label>
+            <input type="text" id="maxPain" placeholder="e.g. 23500" />
+          </div>
+          <div class="input-group">
+            <label>Highest Call OI Strike</label>
+            <input type="text" id="callOI" placeholder="e.g. 24000 CE" />
+          </div>
+          <div class="input-group">
+            <label>Highest Put OI Strike</label>
+            <input type="text" id="putOI" placeholder="e.g. 23000 PE" />
+          </div>
+          <button class="btn btn-success" onclick="saveQuickData()">
+            ⚡ Brain Me Add Karo
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </aside>
+
+  <!-- ========== CHAT AREA ========== -->
+  <div class="chat-area">
+
+    <!-- Chat Toolbar -->
+    <div class="chat-toolbar">
+      <button class="toolbar-btn" onclick="toggleSidebar()">
+        ☰ Knowledge Center
+      </button>
+      <div class="toolbar-sep"></div>
+      <button class="toolbar-btn" id="strictModeBtn" onclick="toggleStrictMode()" title="Strict Mode: AI sirf Brain+PDF se answer dega">
+        🔒 Strict Mode
+      </button>
+      <button class="toolbar-btn" onclick="quickQuery('Full Analysis karo - sabhi 53 questions ke saath complete report do')">
+        📊 Full 53Q Analysis
+      </button>
+      <button class="toolbar-btn" onclick="quickQuery('Aaj ke liye Final Market View kya hai? Bullish ya Bearish? Probability score do.')">
+        🎯 Final View
+      </button>
+      <div class="toolbar-sep"></div>
+      <div class="toolbar-right">
+        <span style="font-size:11px;color:var(--text-muted);" id="contextInfo">
+          Brain: 0 chars | Docs: 0
+        </span>
+      </div>
+    </div>
+
+    <!-- Messages -->
+    <div class="messages" id="messages">
+      <!-- Welcome Card -->
+      <div class="welcome-card" id="welcomeCard">
+        <div class="welcome-icon">🧠</div>
+        <h2>Market Research AI v2.0</h2>
+        <p>
+          Professional Market Intelligence Assistant<br>
+          <strong style="color:var(--accent-blue)">Step 1:</strong> Left sidebar mein Gemini API key daalo<br>
+          <strong style="color:var(--accent-green)">Step 2:</strong> Brain Data ya Documents upload karo<br>
+          <strong style="color:var(--accent-yellow)">Step 3:</strong> Analysis start karo 🚀
+        </p>
+        <div class="quick-btns">
+          <button class="quick-btn" onclick="quickQuery('Full Analysis karo - sabhi 53 questions ke saath')">📊 Full 53Q Analysis</button>
+          <button class="quick-btn" onclick="quickQuery('Q16 batao - Max Pain, OI levels')">🎯 Options Q16</button>
+          <button class="quick-btn" onclick="quickQuery('FII DII flow analysis karo')">📈 FII/DII Q6</button>
+          <button class="quick-btn" onclick="quickQuery('India VIX aur market fear gauge batao')">😰 VIX Q13</button>
+          <button class="quick-btn" onclick="quickQuery('Aaj ka bullish aur bearish score kya hai')">⚖️ Bull/Bear Score</button>
+          <button class="quick-btn" onclick="quickQuery('Screenshot upload karke analysis karo')">📸 Screenshot Analysis</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Chat Input -->
+    <div class="chat-input-area">
+      <!-- Attached files preview -->
+      <div class="attached-files" id="attachedFilesPreview"></div>
+
+      <div class="chat-input-row">
+        <div class="input-attach-btns">
+          <!-- Screenshot/Image attach -->
+          <button class="attach-btn" title="Screenshot ya Image upload karo">
+            📸
+            <input type="file" accept="image/*" onchange="attachImage(event)">
+          </button>
+          <!-- PDF attach to chat -->
+          <button class="attach-btn" title="PDF attach karo chat me">
+            📄
+            <input type="file" accept=".pdf,.txt,.csv,.md" onchange="attachDocToChat(event)">
+          </button>
+        </div>
+
+        <textarea
+          class="chat-textarea"
+          id="chatInput"
+          placeholder="Apna sawal puchho... ya screenshot analysis ke liye image attach karo..."
+          onkeydown="handleKeyDown(event)"
+          oninput="autoResize(this)"
+          rows="1"
+        ></textarea>
+
+        <button class="send-btn" id="sendBtn" onclick="sendMessage()">
+          ➤
+        </button>
+      </div>
+
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px;">
+        <span style="font-size:10px;color:var(--text-muted);">
+          Enter = Send | Shift+Enter = New Line | 📸 = Screenshot | 📄 = PDF
+        </span>
+        <span style="font-size:10px;color:var(--text-muted);" id="charCount">0 chars</span>
+      </div>
+    </div>
+
+  </div><!-- end chat-area -->
+
+</div><!-- end main-layout -->
+
+<!-- ========== MODALS ========== -->
+
+<!-- API Setup Modal -->
+<div class="modal-overlay" id="apiModal">
+  <div class="modal">
+    <h3>🔑 Gemini API Setup</h3>
+    <div class="input-group">
+      <label>API Key Paste Karo</label>
+      <input type="text" id="modalApiKey" placeholder="AIzaSy..." />
+    </div>
+    <p style="font-size:11px;color:var(--text-muted);">
+      🔗 API Key yahan se lein: <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color:var(--accent-blue)">Google AI Studio</a>
+    </p>
+    <div class="modal-btns">
+      <button class="btn btn-primary" onclick="connectAPIModal()">Connect</button>
+      <button class="btn btn-outline" onclick="closeModal('apiModal')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast Container -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- Hidden image for chat -->
+<canvas id="hiddenCanvas" style="display:none;"></canvas>
+
+<script>
+// ==========================================
+//           GLOBAL STATE
+// ==========================================
+const STATE = {
+  apiKey: '',
+  model: 'gemini-1.5-flash',
+  brainData: '',
+  documents: [],      // {name, size, type, content}
+  chatHistory: [],
+  chatAttachments: [], // {type:'image'/'doc', name, data, content}
+  strictMode: false,
+  isLoading: false,
+  sidebarOpen: true,
+};
+
+// ==========================================
+//    53 QUESTIONS — COMPLETE FRAMEWORK
+// ==========================================
+const QUESTIONS_53 = `
+═══════════════════════════════════════════════════════
+           📊 53 QUESTIONS FRAMEWORK — COMPLETE
+═══════════════════════════════════════════════════════
+
+🌐 GLOBAL (Q1–Q5)
+──────────────────
+Q1.  US/UK markets 5–10 din ka trend kaisa hai?
+Q2.  GIFT Nifty + Asia (Nikkei, Hang Seng, KOSPI) kya kar rahe hain?
+Q3.  US 10Y–2Y Yield Curve inverted hai ya normal?
+Q4.  Yen carry trade status (USD/JPY + BOJ policy)?
+Q5.  Gold, Bitcoin, Stocks ka correlation kaisa hai?
+
+🇮🇳 MACRO INDIA (Q6–Q9)
+─────────────────────────
+Q6.  FII/DII 3–5 din ka flow (cash + F&O) kya hai?
+Q7.  DXY (Dollar) + Crude Oil direction kaisa hai?
+Q8.  USD-INR (Rupee) movement kaisa hai?
+Q9.  India 10Y Bond Yield trend kaisa hai?
+
+🏛️ NIFTY UNDER HOOD (Q10–Q15)
+───────────────────────────────
+Q10. Advance-Decline Ratio (35+ Green ya Red)?
+Q11. HDFC Bank + Reliance dono ka mood kya hai?
+Q12. Bank Nifty vs IT Sector alignment kaisa hai?
+Q13. India VIX (Fear Index) level kya hai?
+Q14. Nifty 50/100/200 DMA ke relative kahan hai?
+Q15. Pichle 5–10 dinon ka High/Low range kahan hai?
+
+🎯 OPTIONS INTELLIGENCE (Q16–Q18)
+───────────────────────────────────
+Q16. Max Pain level + Highest Call OI (Resistance) + Highest Put OI (Support)?
+Q17. PCR (Put-Call Ratio) kya hai? (>1.3 bullish, <0.7 bearish)
+Q18. FII Index Futures Long-Short Ratio kya hai?
+
+🔥 ADVANCED HIDDEN (Q19–Q30)
+──────────────────────────────
+Q19. Volume Profile POC (highest volume level)?
+Q20. OI Change (buildup vs unwind)?
+Q21. IV Skew (Call vs Put IV)?
+Q22. New 52-week highs vs lows (Nifty 500)?
+Q23. Monsoon progress (IMD)?
+Q24. India-US Trade Deal status?
+Q25. Bank Nifty vs Nifty divergence?
+Q26. Mutual Fund SIP flows (monthly)?
+Q27. Promoter Pledge changes (Top Nifty)?
+Q28. Block + Bulk Deals (kal)?
+Q29. Risk Reversal Skew (25-delta)?
+Q30. FCF Health (Top Nifty companies)?
+
+🌊 LIQUIDITY & CREDIT (Q31–Q33)
+─────────────────────────────────
+Q31. Global Central Bank (Fed + ECB + BOJ + RBI) balance sheet badh raha hai ya ghat raha hai?
+Q32. US Credit Spreads (HY vs IG) kya hain?
+Q33. India 10Y G-Sec Yield direction?
+
+🏛️ INSIDER ACTIONS (Q34–Q36)
+──────────────────────────────
+Q34. CEO/CFO insider buying (Nifty 50)?
+Q35. Corporate Buyback activity?
+Q36. Insider trading pattern (BSE/NSE)?
+
+📊 MACRO REGIME (Q37–Q40)
+───────────────────────────
+Q37. US ISM Manufacturing PMI (>50 ya <50)?
+Q38. India Manufacturing PMI?
+Q39. India CPI inflation trend?
+Q40. RBI policy stance (hawkish ya dovish)?
+
+🔥 GOD LEVEL (Q41–Q50)
+────────────────────────
+Q41. Global GDP growth outlook (IMF/World Bank)?
+Q42. Nifty Earnings Revision Ratio (UP ya DOWN)?
+Q43. Margin debt levels (cycle high ya low)?
+Q44. Speculative activity (small caps) normal ya excessive?
+Q45. Breadth Thrust hua kya?
+Q46. DXY vs Gold correlation chal rahi hai?
+Q47. India 5Y CDS spread?
+Q48. Real estate health (top 8 cities)?
+Q49. Bank NPA trend (RBI)?
+Q50. Mutual Fund cash levels?
+
+💤 SLEEP MODE (Q51–Q53)
+─────────────────────────
+Q51. Nifty 200 DMA ke upar hai ya neeche?
+Q52. Multi-year cycle mein hum kahan hain?
+Q53. India M2 Money Supply YoY growth?
+
+═══════════════════════════════════════════════════════
+              TOTAL: 53 QUESTIONS ✅
+═══════════════════════════════════════════════════════
+`;
+
+// ==========================================
+//    SYSTEM PROMPT — AI KA BRAIN
+// ==========================================
+function buildSystemPrompt() {
+  const brainSection = STATE.brainData
+    ? `\n\n═══════════════════════════════════════\n🧠 BRAIN DATA (User ka Saved Data):\n═══════════════════════════════════════\n${STATE.brainData}`
+    : '\n\n🧠 BRAIN DATA: [Koi brain data nahi hai]';
+
+  const docsSection = STATE.documents.length > 0
+    ? `\n\n═══════════════════════════════════════\n📚 UPLOADED DOCUMENTS (${STATE.documents.length} files):\n═══════════════════════════════════════\n` +
+      STATE.documents.map((d, i) =>
+        `\n📄 [DOC ${i+1}] "${d.name}" (${d.type}):\n${d.content}`
+      ).join('\n\n---\n')
+    : '\n\n📚 UPLOADED DOCUMENTS: [Koi document upload nahi hua]';
+
+  return `Tu ek PROFESSIONAL MARKET RESEARCH AI ASSISTANT hai — Market Research AI v2.0.
+
+Tu ek senior market analyst ki tarah kaam karta hai jo sirf VERIFIED DATA pe kaam karta hai.
+
+═══════════════════════════════════════════════════════
+                    TERE PERMANENT RULES
+═══════════════════════════════════════════════════════
+
+❌ KABHI NAHI:
+• Khud se koi answer nahi banayega
+• Fake confidence nahi dikhayega  
+• Koi prediction invent nahi karega
+• Bina data ke kuch nahi bolega
+• Hallucinate nahi karega
+
+✅ HAMESHA:
+• Pehle Brain Data dekhega
+• Phir Uploaded Documents dekhega
+• Phir Screenshot analyze karega (agar diya ho)
+• Sab sources ko cross-check karega
+• Agar data nahi mila → sirf likhega: "❌ Data Available Nahi Hai"
+• Har answer ke niche SOURCE clearly likhega
+
+═══════════════════════════════════════════════════════
+           ANSWER DENE KA PROCESS (HAMESHA YAHI)
+═══════════════════════════════════════════════════════
+
+Step 1: 🧠 Brain Data check karo
+Step 2: 📄 Uploaded Documents search karo  
+Step 3: 📸 Screenshot analyze karo (agar hai)
+Step 4: 🌐 Apna existing knowledge use karo (sirf agar data missing ho)
+Step 5: Cross-verify sab sources
+Step 6: Answer do + Source clearly batao
+
+═══════════════════════════════════════════════════════
+                  SOURCE FORMAT (MANDATORY)
+═══════════════════════════════════════════════════════
+
+Har answer ke NICHE ye likhna ZAROORI hai:
+
+━━━━━ SOURCE ━━━━━
+✅ Brain Data    [agar use kiya]
+✅ Uploaded PDF  [agar use kiya]
+✅ Screenshot    [agar use kiya]
+✅ AI Knowledge  [agar use kiya]
+❌ Data Available Nahi Hai [agar koi data nahi mila]
+
+Confidence: [High / Medium / Low]
+
+═══════════════════════════════════════════════════════
+              53 QUESTIONS FRAMEWORK
+═══════════════════════════════════════════════════════
+
+${QUESTIONS_53}
+
+═══════════════════════════════════════════════════════
+           FULL ANALYSIS FORMAT (jab user mange)
+═══════════════════════════════════════════════════════
+
+Jab user "Full Analysis" ya "53 Questions" mange:
+
+1. Har question ka answer do (jo data available ho)
+2. Agar kisi question ka data nahi → "❌ Data Nahi" likho
+3. Ant mein:
+   • Bullish Score: X/53
+   • Bearish Score: X/53  
+   • Neutral/NA: X/53
+   • Bullish Probability: XX%
+   • Bearish Probability: XX%
+   • Neutral: XX%
+   • ⭐ FINAL VIEW: [Bullish/Bearish/Neutral] — [Reason in 1-2 lines]
+
+═══════════════════════════════════════════════════════
+              SCREENSHOT ANALYSIS RULES
+═══════════════════════════════════════════════════════
+
+Jab screenshot aaye:
+1. Screenshot ko carefully analyze karo
+2. Usme jo numbers, charts, text dikh raha hai — wahi use karo
+3. Brain Data se cross-verify karo
+4. Phir answer do
+
+═══════════════════════════════════════════════════════
+              STRICT MODE (agar active hai)
+═══════════════════════════════════════════════════════
+
+${STATE.strictMode ? '🔒 STRICT MODE ACTIVE: SIRF Brain Data + Uploaded Documents se answer do. Baki kuch mat use karo. Agar data nahi mila to "❌ Data Available Nahi Hai" likho.' : '🔓 Normal Mode: Brain Data + Documents + Screenshot + AI Knowledge sab use kar sakte ho.'}
+
+${brainSection}
+
+${docsSection}
+
+═══════════════════════════════════════════════════════
+
+Ab user ke questions ka jawab do. Hamesha Hinglish mein bolo (Hindi + English mix). Professional raho.`;
+}
+
+// ==========================================
+//    GEMINI API CALL
+// ==========================================
+async function callGemini(userMessage, imageData = null) {
+  if (!STATE.apiKey) {
+    throw new Error('API key nahi hai! Pehle Gemini API key daalo.');
+  }
+
+  const systemPrompt = buildSystemPrompt();
+
+  // Build contents array
+  const contents = [];
+
+  // Add chat history (last 6 messages for context)
+  const recentHistory = STATE.chatHistory.slice(-6);
+  for (const msg of recentHistory) {
+    if (msg.role === 'user') {
+      contents.push({ role: 'user', parts: [{ text: msg.content }] });
+    } else {
+      contents.push({ role: 'model', parts: [{ text: msg.content }] });
+    }
+  }
+
+  // Build current message parts
+  const currentParts = [];
+
+  // Add system prompt + user message
+  currentParts.push({
+    text: systemPrompt + '\n\n═══════════════════════════════════════\nUSER KA SAWAL:\n═══════════════════════════════════════\n' + userMessage
+  });
+
+  // Add image if present
+  if (imageData) {
+    const base64 = imageData.split(',')[1];
+    const mimeType = imageData.split(';')[0].split(':')[1];
+    currentParts.push({
+      inline_data: {
+        mime_type: mimeType,
+        data: base64
+      }
+    });
+  }
+
+  // Add chat attachments (images)
+  for (const att of STATE.chatAttachments) {
+    if (att.type === 'image' && att.data) {
+      const base64 = att.data.split(',')[1];
+      const mimeType = att.data.split(';')[0].split(':')[1];
+      currentParts.push({
+        inline_data: { mime_type: mimeType, data: base64 }
+      });
+    }
+  }
+
+  contents.push({ role: 'user', parts: currentParts });
+
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${STATE.model}:generateContent?key=${STATE.apiKey}`;
+
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      contents: contents,
+      generationConfig: {
+        temperature: 0.2,
+        topK: 40,
+        topP: 0.9,
+        maxOutputTokens: 8192,
+      },
+      safetySettings: [
+        { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_NONE" },
+        { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_NONE" },
+        { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_NONE" },
+        { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_NONE" }
+      ]
+    })
+  });
+
+  if (!response.ok) {
+    const err = await response.json();
+    throw new Error(err.error?.message || `API Error: ${response.status}`);
+  }
+
+  const data = await response.json();
+
+  if (!data.candidates || !data.candidates[0]) {
+    throw new Error('API se response nahi aaya. Dobara try karo.');
+  }
+
+  return data.candidates[0].content.parts[0].text;
+}
+
+// ==========================================
+//    FILE READING
+// ==========================================
+async function readFileAsText(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (e) => resolve(e.target.result);
+    reader.onerror = () => reject(new Error('File read error'));
+
+    if (file.type === 'application/pdf') {
+      // For PDF - read as text (basic)
+      reader.readAsText(file);
+    } else if (file.name.endsWith('.xlsx') || file.name.endsWith('.xls')) {
+      reader.readAsBinaryString(file);
+    } else {
+      reader.readAsText(file);
+    }
+  });
+}
+
+async function readFileAsDataURL(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (e) => resolve(e.target.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+// ==========================================
+//    HANDLE FILE UPLOADS (Knowledge Center)
+// ==========================================
+async function handleFileUpload(event) {
+  const files = Array.from(event.target.files);
+  if (!files.length) return;
+
+  for (const file of files) {
+    try {
+      showToast(`📄 Loading: ${file.name}`, 'info');
+      const content = await readFileAsText(file);
+      const doc = {
+        id: Date.now() + Math.random(),
+        name: file.name,
+        size: formatSize(file.size),
+        type: file.type || getFileType(file.name),
+        content: content.slice(0, 50000) // 50k char limit per doc
+      };
+      STATE.documents.push(doc);
+      showToast(`✅ Loaded: ${file.name}`, 'success');
+    } catch(e) {
+      showToast(`❌ Error: ${file.name}`, 'error');
+    }
+  }
+
+  renderFileList();
+  updateContextInfo();
+  event.target.value = '';
+}
+
+function renderFileList() {
+  const list = document.getElementById('fileList');
+  list.innerHTML = '';
+
+  STATE.documents.forEach((doc, idx) => {
+    const item = document.createElement('div');
+    item.className = 'file-item';
+    item.innerHTML = `
+      <span class="file-icon">${getFileIcon(doc.name)}</span>
+      <span class="file-name" title="${doc.name}">${doc.name}</span>
+      <span class="file-size">${doc.size}</span>
+      <button class="file-remove" onclick="removeDoc(${idx})">✕</button>
+    `;
+    list.appendChild(item);
+  });
+}
+
+function removeDoc(idx) {
+  STATE.documents.splice(idx, 1);
+  renderFileList();
+  updateContextInfo();
+  showToast('Document removed', 'info');
+}
+
+function clearAllDocs() {
+  if (STATE.documents.length === 0) return;
+  if (confirm('Sab documents hatana chahte ho?')) {
+    STATE.documents = [];
+    renderFileList();
+    updateContextInfo();
+    showToast('All documents removed', 'info');
+  }
+}
+
+// ==========================================
+//    ATTACH TO CHAT
+// ==========================================
+async function attachImage(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const dataURL = await readFileAsDataURL(file);
+  STATE.chatAttachments.push({
+    type: 'image',
+    name: file.name,
+    data: dataURL
+  });
+
+  renderAttachedFiles();
+  event.target.value = '';
+  showToast(`📸 Image attached: ${file.name}`, 'success');
+}
+
+async function attachDocToChat(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  try {
+    const content = await readFileAsText(file);
+    STATE.chatAttachments.push({
+      type: 'doc',
+      name: file.name,
+      content: content.slice(0, 20000)
+    });
+    renderAttachedFiles();
+    event.target.value = '';
+    showToast(`📄 Doc attached: ${file.name}`, 'success');
+  } catch(e) {
+    showToast(`❌ Error attaching: ${file.name}`, 'error');
+  }
+}
+
+function renderAttachedFiles() {
+  const preview = document.getElementById('attachedFilesPreview');
+  preview.innerHTML = '';
+
+  STATE.chatAttachments.forEach((att, idx) => {
+    const div = document.createElement('div');
+    div.className = 'attached-file';
+    div.innerHTML = `
+      ${att.type === 'image' ? '📸' : '📄'} ${att.name}
+      <button onclick="removeAttachment(${idx})">✕</button>
+    `;
+    preview.appendChild(div);
+  });
+}
+
+function removeAttachment(idx) {
+  STATE.chatAttachments.splice(idx, 1);
+  renderAttachedFiles();
+}
+
+// ==========================================
+//    SEND MESSAGE
+// ==========================================
+async function sendMessage() {
+  if (STATE.isLoading) return;
+
+  const input = document.getElementById('chatInput');
+  let userText = input.value.trim();
+
+  // Check attachments
+  const hasAttachments = STATE.chatAttachments.length > 0;
+
+  if (!userText && !hasAttachments) {
+    showToast('Kuch likho ya attachment do!', 'error');
+    return;
+  }
+
+  if (!STATE.apiKey) {
+    showToast('Pehle Gemini API key daalo! (Left sidebar mein)', 'error');
+    // Highlight API section
+    openSection('apiSection');
+    return;
+  }
+
+  // Build user display message
+  let displayMsg = userText;
+  let fullUserMsg = userText;
+
+  // Add doc attachments to message
+  for (const att of STATE.chatAttachments) {
+    if (att.type === 'doc') {
+      fullUserMsg += `\n\n📄 [Attached Document: "${att.name}"]\n${att.content}`;
+    }
+  }
+
+  if (!userText) displayMsg = hasAttachments ? '📎 [Attachment Analysis Request]' : '';
+  if (!fullUserMsg) fullUserMsg = 'Is attachment/screenshot ko analyze karo aur detailed report do.';
+
+  // Hide welcome card
+  const welcomeCard = document.getElementById('welcomeCard');
+  if (welcomeCard) welcomeCard.style.display = 'none';
+
+  // Get image attachment
+  const imageAtt = STATE.chatAttachments.find(a => a.type === 'image');
+
+  // Add user message to UI
+  addUserMessage(displayMsg, imageAtt?.data);
+
+  // Clear input
+  input.value = '';
+  input.style.height = 'auto';
+  document.getElementById('charCount').textContent = '0 chars';
+
+  // Add to history
+  STATE.chatHistory.push({ role: 'user', content: fullUserMsg });
+
+  // Clear attachments
+  STATE.chatAttachments = [];
+  renderAttachedFiles();
+
+  // Show thinking
+  const thinkingId = showThinking();
+
+  STATE.isLoading = true;
+  document.getElementById('sendBtn').disabled = true;
+
+  try {
+    const response = await callGemini(fullUserMsg, imageAtt?.data);
+
+    // Remove thinking
+    removeThinking(thinkingId);
+
+    // Add AI response
+    addAIMessage(response);
+
+    // Add to history
+    STATE.chatHistory.push({ role: 'assistant', content: response });
+
+  } catch(error) {
+    removeThinking(thinkingId);
+    addAIMessage(`❌ **Error:** ${error.message}\n\nSolution:\n1. API key check karo\n2. Internet connection check karo\n3. API quota check karo`);
+    showToast(`Error: ${error.message}`, 'error');
+  }
+
+  STATE.isLoading = false;
+  document.getElementById('sendBtn').disabled = false;
+}
+
+// ==========================================
+//    MESSAGE RENDERING
+// ==========================================
+function addUserMessage(text, imageData) {
+  const messages = document.getElementById('messages');
+  const time = new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+
+  const div = document.createElement('div');
+  div.className = 'msg user';
+  div.innerHTML = `
+    <div class="msg-avatar">👤</div>
+    <div class="msg-content">
+      <div class="msg-bubble">
+        ${text ? escapeHtml(text).replace(/\n/g, '<br>') : ''}
+        ${imageData ? `<br><img src="${imageData}" class="msg-image" alt="Screenshot">` : ''}
+      </div>
+      <div class="msg-time">${time}</div>
+    </div>
+  `;
+  messages.appendChild(div);
+  scrollToBottom();
+}
+
+function addAIMessage(text) {
+  const messages = document.getElementById('messages');
+  const time = new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+
+  const div = document.createElement('div');
+  div.className = 'msg ai';
+  div.innerHTML = `
+    <div class="msg-avatar">🧠</div>
+    <div class="msg-content">
+      <div class="msg-bubble">
+        ${formatAIResponse(text)}
+      </div>
+      <div class="msg-time">🧠 Market AI • ${time}</div>
+    </div>
+  `;
+  messages.appendChild(div);
+  scrollToBottom();
+}
+
+function formatAIResponse(text) {
+  // Format the AI response nicely
+  let html = text;
+
+  // Escape HTML first
+  html = html.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+  // Bold **text**
+  html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+
+  // Italic *text*
+  html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
+
+  // Code `text`
+  html = html.replace(/`([^`]+)`/g, '<code style="background:rgba(59,130,246,0.1);padding:2px 5px;border-radius:3px;font-size:12px;">$1</code>');
+
+  // Bullish indicators
+  html = html.replace(/\b(Bullish|BULLISH|📈)\b/g, '<span class="highlight-green">$1</span>');
+  html = html.replace(/\b(Bearish|BEARISH|📉)\b/g, '<span class="highlight-red">$1</span>');
+  html = html.replace(/\b(Neutral|NEUTRAL)\b/g, '<span class="highlight-yellow">$1</span>');
+
+  // Source section styling
+  html = html.replace(
+    /━+\s*SOURCE\s*━+/g,
+    '<div class="source-title" style="margin-top:12px;">━━━ SOURCE ━━━</div>'
+  );
+
+  // ✅ and ❌ emoji styling
+  html = html.replace(/✅ (Brain Data)/g, '<span class="source-item active">✅ Brain Data</span>');
+  html = html.replace(/✅ (Uploaded PDF)/g, '<span class="source-item active">✅ Uploaded PDF</span>');
+  html = html.replace(/✅ (Screenshot)/g, '<span class="source-item active">✅ Screenshot</span>');
+  html = html.replace(/✅ (AI Knowledge)/g, '<span class="source-item active">✅ AI Knowledge</span>');
+  html = html.replace(/❌ Data Available Nahi Hai/g, '<span class="source-item" style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);color:var(--accent-red);padding:4px 10px;border-radius:5px;font-size:11px;">❌ Data Available Nahi Hai</span>');
+
+  // Horizontal lines
+  html = html.replace(/^[─═━]{3,}$/gm, '<hr style="border:none;border-top:1px solid var(--border);margin:8px 0;">');
+
+  // Headers Q1, Q2, etc
+  html = html.replace(/^(Q\d+\..*?)$/gm, '<strong style="color:var(--accent-blue);">$1</strong>');
+
+  // Emoji section headers
+  html = html.replace(/^(🌐|🇮🇳|🏛️|🎯|🔥|🌊|💤|📊)(.+)$/gm,
+    '<div style="font-weight:700;color:var(--accent-purple);margin:8px 0 4px;">$1$2</div>');
+
+  // Newlines to br
+  html = html.replace(/\n/g, '<br>');
+
+  return html;
+}
+
+// ==========================================
+//    THINKING ANIMATION
+// ==========================================
+function showThinking() {
+  const messages = document.getElementById('messages');
+  const id = 'thinking-' + Date.now();
+
+  const steps = [
+    '🧠 Brain Data check kar raha hoon...',
+    '📄 Documents search kar raha hoon...',
+    '📸 Screenshot analyze kar raha hoon...',
+    '🔍 Cross-verification kar raha hoon...',
+    '✍️ Answer prepare kar raha hoon...'
+  ];
+
+  const div = document.createElement('div');
+  div.className = 'msg ai';
+  div.id = id;
+  div.innerHTML = `
+    <div class="msg-avatar">🧠</div>
+    <div class="msg-content">
+      <div class="thinking">
+        <div class="thinking-dots">
+          <div class="thinking-dot"></div>
+          <div class="thinking-dot"></div>
+          <div class="thinking-dot"></div>
+        </div>
+        <div class="thinking-steps" id="${id}-steps">
+          <div class="thinking-step" style="animation-delay:0s">🧠 Analyzing...</div>
+        </div>
+      </div>
+    </div>
+  `;
+  messages.appendChild(div);
+  scrollToBottom();
+
+  // Animate steps
+  let stepIdx = 0;
+  const stepsContainer = document.getElementById(`${id}-steps`);
+  const interval = setInterval(() => {
+    if (stepIdx < steps.length && document.getElementById(id)) {
+      const stepEl = document.createElement('div');
+      stepEl.className = 'thinking-step';
+      stepEl.style.animationDelay = '0s';
+      stepEl.textContent = steps[stepIdx];
+      stepsContainer.appendChild(stepEl);
+      stepIdx++;
+      scrollToBottom();
+    } else {
+      clearInterval(interval);
+    }
+  }, 600);
+
+  div._interval = interval;
+  return id;
+}
+
+function removeThinking(id) {
+  const el = document.getElementById(id);
+  if (el) {
+    if (el._interval) clearInterval(el._interval);
+    el.remove();
+  }
+}
+
+// ==========================================
+//    API CONNECTION
+// ==========================================
+async function connectAPI() {
+  const key = document.getElementById('apiKeyInput').value.trim();
+  const model = document.getElementById('modelSelect').value;
+
+  if (!key) {
+    showToast('API key daalo!', 'error');
+    return;
+  }
+
+  STATE.apiKey = key;
+  STATE.model = model;
+
+  // Test API
+  try {
+    showToast('🔌 API test kar raha hoon...', 'info');
+
+    const testUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`;
+    const resp = await fetch(testUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [{ role: 'user', parts: [{ text: 'Say "OK"' }] }],
+        generationConfig: { maxOutputTokens: 10 }
+      })
+    });
+
+    if (resp.ok) {
+      document.getElementById('statusDot').classList.add('active');
+      document.getElementById('statusText').textContent = `✅ Connected (${model})`;
+      showToast(`✅ API Connected! Model: ${model}`, 'success');
+
+      // Save to localStorage
+      localStorage.setItem('marketAI_apiKey', key);
+      localStorage.setItem('marketAI_model', model);
+    } else {
+      const err = await resp.json();
+      throw new Error(err.error?.message || 'Connection failed');
+    }
+  } catch(e) {
+    showToast(`❌ API Error: ${e.message}`, 'error');
+    STATE.apiKey = '';
+  }
+}
+
+async function connectAPIModal() {
+  const key = document.getElementById('modalApiKey').value.trim();
+  document.getElementById('apiKeyInput').value = key;
+  closeModal('apiModal');
+  await connectAPI();
+}
+
+// ==========================================
+//    BRAIN MANAGEMENT
+// ==========================================
+function saveBrain() {
+  const data = document.getElementById('brainData').value;
+  STATE.brainData = data;
+
+  const now = new Date().toLocaleTimeString('en-IN');
+  document.getElementById('brainSize').textContent = `${data.length.toLocaleString()} chars`;
+  document.getElementById('lastSaved').textContent = now;
+
+  // Save to localStorage
+  localStorage.setItem('marketAI_brain', data);
+
+  updateContextInfo();
+  showToast(`✅ Brain saved! (${data.length.toLocaleString()} chars)`, 'success');
+}
+
+function clearBrain() {
+  if (!STATE.brainData) return;
+  if (confirm('Brain data clear karna chahte ho?')) {
+    STATE.brainData = '';
+    document.getElementById('brainData').value = '';
+    document.getElementById('brainSize').textContent = '0 chars';
+    document.getElementById('lastSaved').textContent = 'Never';
+    localStorage.removeItem('marketAI_brain');
+    updateContextInfo();
+    showToast('🗑️ Brain cleared', 'info');
+  }
+}
+
+function saveQuickData() {
+  const fields = {
+    'Nifty Level': document.getElementById('niftyLevel').value,
+    'India VIX': document.getElementById('vixLevel').value,
+    'PCR': document.getElementById('pcrLevel').value,
+    'FII Flow': document.getElementById('fiiFlow').value,
+    'DII Flow': document.getElementById('diiFlow').value,
+    'GIFT Nifty': document.getElementById('giftNifty').value,
+    'Max Pain': document.getElementById('maxPain').value,
+    'Highest Call OI': document.getElementById('callOI').value,
+    'Highest Put OI': document.getElementById('putOI').value,
+  };
+
+  const lines = Object.entries(fields)
+    .filter(([k, v]) => v.trim())
+    .map(([k, v]) => `${k}: ${v}`);
+
+  if (!lines.length) {
+    showToast('Koi data nahi diya!', 'error');
+    return;
+  }
+
+  const date = new Date().toLocaleDateString('en-IN');
+  const newData = `\n\n[Quick Data — ${date}]\n${lines.join('\n')}`;
+
+  const current = document.getElementById('brainData').value;
+  document.getElementById('brainData').value = current + newData;
+
+  saveBrain();
+  showToast('⚡ Quick data brain mein add hua!', 'success');
+
+  // Clear fields
+  ['niftyLevel','vixLevel','pcrLevel','fiiFlow','diiFlow','giftNifty','maxPain','callOI','putOI']
+    .forEach(id => { document.getElementById(id).value = ''; });
+}
+
+// ==========================================
+//    SIDEBAR & UI CONTROLS
+// ==========================================
+function toggleSidebar() {
+  const sidebar = document.getElementById('sidebar');
+  STATE.sidebarOpen = !STATE.sidebarOpen;
+  sidebar.classList.toggle('collapsed', !STATE.sidebarOpen);
+}
+
+function toggleSection(id) {
+  const body = document.getElementById(id);
+  const toggleId = id + 'Toggle';
+  const toggle = document.getElementById(toggleId);
+
+  const isOpen = body.classList.toggle('open');
+  if (toggle) toggle.classList.toggle('open', isOpen);
+}
+
+function openSection(id) {
+  const body = document.getElementById(id);
+  const toggle = document.getElementById(id + 'Toggle');
+  body.classList.add('open');
+  if (toggle) toggle.classList.add('open');
+}
+
+function toggleStrictMode() {
+  STATE.strictMode = !STATE.strictMode;
+  const btn = document.getElementById('strictModeBtn');
+  btn.classList.toggle('active', STATE.strictMode);
+  btn.textContent = STATE.strictMode ? '🔒 Strict Mode ON' : '🔓 Strict Mode';
+  showToast(STATE.strictMode ? '🔒 Strict Mode ON' : '🔓 Strict Mode OFF', 'info');
+}
+
+function clearChat() {
+  if (confirm('Chat clear karna chahte ho?')) {
+    const messages = document.getElementById('messages');
+    messages.innerHTML = `
+      <div class="welcome-card" id="welcomeCard">
+        <div class="welcome-icon">🧠</div>
+        <h2>Market Research AI v2.0</h2>
+        <p>Chat cleared. Naya analysis shuru karo!</p>
+        <div class="quick-btns">
+          <button class="quick-btn" onclick="quickQuery('Full Analysis karo - sabhi 53 questions ke saath')">📊 Full 53Q Analysis</button>
+          <button class="quick-btn" onclick="quickQuery('Final Market View do')">🎯 Final View</button>
+        </div>
+      </div>
+    `;
+    STATE.chatHistory = [];
+    showToast('Chat cleared', 'info');
+  }
+}
+
+// ==========================================
+//    QUICK QUERY
+// ==========================================
+function quickQuery(text) {
+  const input = document.getElementById('chatInput');
+  input.value = text;
+  input.style.height = 'auto';
+  input.style.height = Math.min(input.scrollHeight, 120) + 'px';
+  document.getElementById('charCount').textContent = text.length + ' chars';
+  sendMessage();
+}
+
+// ==========================================
+//    INPUT HANDLERS
+// ==========================================
+function handleKeyDown(event) {
+  if (event.key === 'Enter' && !event.shiftKey) {
+    event.preventDefault();
+    sendMessage();
+  }
+}
+
+function autoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+  document.getElementById('charCount').textContent = el.value.length + ' chars';
+}
+
+// ==========================================
+//    UTILITY FUNCTIONS
+// ==========================================
+function scrollToBottom() {
+  const messages = document.getElementById('messages');
+  setTimeout(() => {
+    messages.scrollTop = messages.scrollHeight;
+  }, 50);
+}
+
+function updateContextInfo() {
+  const docCount = STATE.documents.length;
+  const brainLen = STATE.brainData.length;
+  document.getElementById('contextInfo').textContent =
+    `Brain: ${brainLen.toLocaleString()} chars | Docs: ${docCount}`;
+
+  document.getElementById('brainSize').textContent = `${brainLen.toLocaleString()} chars`;
+  document.getElementById('docCount').textContent = `${docCount} files`;
+}
+
+function formatSize(bytes) {
+  if (bytes < 1024) return bytes + ' B';
+  if (bytes < 1024*1024) return (bytes/1024).toFixed(1) + ' KB';
+  return (bytes/1024/1024).toFixed(1) + ' MB';
+}
+
+function getFileIcon(name) {
+  const ext = name.split('.').pop().toLowerCase();
+  const icons = {
+    pdf: '📄', txt: '📝', doc: '📝', docx: '📝',
+    csv: '📊', xlsx: '📊', xls: '📊', md: '📋',
+    png: '🖼️', jpg: '🖼️', jpeg: '🖼️'
+  };
+  return icons[ext] || '📁';
+}
+
+function getFileType(name) {
+  const ext = name.split('.').pop().toLowerCase();
+  const types = {
+    pdf: 'application/pdf', txt: 'text/plain',
+    csv: 'text/csv', md: 'text/markdown',
+    xlsx: 'application/vnd.ms-excel'
+  };
+  return types[ext] || 'text/plain';
+}
+
+function escapeHtml(text) {
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+// ==========================================
+//    TOAST NOTIFICATIONS
+// ==========================================
+function showToast(msg, type = 'info') {
+  const container = document.getElementById('toastContainer');
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+  toast.textContent = msg;
+  container.appendChild(toast);
+  setTimeout(() => toast.remove(), 3000);
+}
+
+// ==========================================
+//    MODAL
+// ==========================================
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+}
+
+// ==========================================
+//    DRAG & DROP
+// ==========================================
+function setupDragDrop() {
+  const dropZone = document.getElementById('dropZone');
+
+  dropZone.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    dropZone.classList.add('dragover');
+  });
+
+  dropZone.addEventListener('dragleave', () => {
+    dropZone.classList.remove('dragover');
+  });
+
+  dropZone.addEventListener('drop', async (e) => {
+    e.preventDefault();
+    dropZone.classList.remove('dragover');
+
+    const files = Array.from(e.dataTransfer.files);
+    for (const file of files) {
+      try {
+        const content = await readFileAsText(file);
+        STATE.documents.push({
+          id: Date.now() + Math.random(),
+          name: file.name,
+          size: formatSize(file.size),
+          type: file.type || getFileType(file.name),
+          content: content.slice(0, 50000)
+        });
+        showToast(`✅ Dropped: ${file.name}`, 'success');
+      } catch(e) {
+        showToast(`❌ Error: ${file.name}`, 'error');
+      }
+    }
+    renderFileList();
+    updateContextInfo();
+  });
+}
+
+// ==========================================
+//    LOAD SAVED DATA
+// ==========================================
+function loadSavedData() {
+  // Load API key
+  const savedKey = localStorage.getItem('marketAI_apiKey');
+  const savedModel = localStorage.getItem('marketAI_model');
+  if (savedKey) {
+    STATE.apiKey = savedKey;
+    document.getElementById('apiKeyInput').value = savedKey;
+    document.getElementById('statusDot').classList.add('active');
+    document.getElementById('statusText').textContent = `✅ Connected (${savedModel || 'gemini-1.5-flash'})`;
+  }
+  if (savedModel) {
+    STATE.model = savedModel;
+    document.getElementById('modelSelect').value = savedModel;
+  }
+
+  // Load brain
+  const savedBrain = localStorage.getItem('marketAI_brain');
+  if (savedBrain) {
+    STATE.brainData = savedBrain;
+    document.getElementById('brainData').value = savedBrain;
+    document.getElementById('brainSize').textContent = `${savedBrain.length.toLocaleString()} chars`;
+    document.getElementById('lastSaved').textContent = 'From Storage';
+  }
+
+  updateContextInfo();
+}
+
+// ==========================================
+//    INIT
+// ==========================================
+document.addEventListener('DOMContentLoaded', () => {
+  setupDragDrop();
+  loadSavedData();
+
+  // Open first two sections by default
+  openSection('apiSection');
+  openSection('brainSection');
+
+  // Initial context update
+  updateContextInfo();
+
+  console.log('🧠 Market Research AI v2.0 Ready!');
+  console.log('📊 53 Questions Framework Loaded');
+  console.log('🔑 Enter API key to start');
+});
+</script>
+</body>
+</html>
